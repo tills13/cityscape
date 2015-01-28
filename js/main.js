@@ -4,8 +4,8 @@ var window_width = 15, window_height = 15, window_padding = 10;
 var s = Snap("#cityscape");
 var sj = $("#cityscape");
 
-var svg_height = sj.height();
-var svg_width = sj.width();
+var svg_height = sj.outerHeight();
+var svg_width = sj.outerWidth();
 
 var buildings = s.g().attr({ id: "buildings" });
 var building_masks = s.mask();
@@ -51,7 +51,7 @@ function render_shadows() {
 		}
 
 		var shadow = s.polyline(shadow_verticies);
-		shadow.attr({ class: "shadow", fill: "black", opacity: 0.1 });
+		shadow.attr({ class: "shadow", fill: "black", opacity: 0.2 });
 		//mask: building_masks
 	});
 }
@@ -84,7 +84,6 @@ function render_buildings() {
 			while (window_x < (building_x + building_width)) {
 				var window_lit = (Math.random() > 0.7);
 				var window = s.rect(window_x, window_y, window_width, window_height)
-				window.attr({ fill: (window_lit ? "yellow" : "slateblue") });
 				window.addClass("window " + (window_lit ? "window_lit" : "window_unlit"))
 				building.add(window);
 				window_x += (window_width + window_padding);
@@ -98,16 +97,20 @@ function render_buildings() {
 }
 
 function render_light_source(time) {
-	var sun = s.select("#light_source");
-	if (sun) sun.remove();
+	var ls = s.select("#light_source");
+	if (ls) ls.remove();
 
 	if (time) {
-		light_source.x = (time % svg_width);
-		light_source.y = 300;//(Math.pow((light_source.x - (svg_width / 2)), 2) / (svg_height * 1.2));
-		$("#time").text("{0}:{1}".format(Math.round(time / 100), time % 100));
+		console.log(time,svg_width,svg_height);
+		light_source.x = (time % svg_width) - 200;
+		light_source.y = svg_height - (Math.sin((1 / (svg_width / 2)) * light_source.x) * svg_height) - 200;
+		//$("#time").text("{0}:{1}".format(Math.round(time / 100), time % 100));
 	}
 
 	s.prepend(s.circle(light_source.x, light_source.y, light_source.radius, light_source.radius).attr({ id: "light_source", class: (time < (svg_width) ? "sun" : "moon") }));
+	
+	if (time > svg_width) $("body").css("background", "#2b2330");
+	else { $("body").css("background", "cadetblue"); }
 }
 
 function render(buildings, time) {
@@ -116,18 +119,17 @@ function render(buildings, time) {
 	render_light_source(time);
 }
 
-
-$(document).mousemove(function () {
+/*$(document).mousemove(function () {
 	light_source.x = event.pageX;
 	light_source.y = event.pageY;
 	render(false);
-});
+});*/
 
 var time = 100;
 render(true, time);
-/*setInterval(function() {
-	if (time == 0) render(true, time);
-	else render(false, time);
 
-	time = (time + 1) % (2 * svg_width);
-}, 50);*/
+setInterval(function() {
+	render(false, time);
+
+	time = (time + 20) % (2 * svg_width);
+}, 100);

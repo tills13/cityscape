@@ -2,6 +2,8 @@ body {
 	background: cadetblue;
 	padding: 0;
 	margin: 0;
+
+	transition: background 10s ease;
 }
 
 #time {
@@ -22,13 +24,13 @@ body {
 }
 
 .building {
-	fill: darkslateblue;
+	fill: #2b2330;
 	stroke: black;
 	stroke-width: 2px;
 }
 
-.window_unlit { fill: black; }
-.window_lit { fill: navajowhite; }
+.window.window_unlit { fill: slategrey; }
+.window.window_lit { fill: navajowhite; }
 
-.sun { fill: yellow; }
-.moon { fill: floralwhite; }
+.ls.sun { fill: yellow; }
+.ls.moon { fill: floralwhite; }
